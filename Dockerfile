@@ -1,23 +1,17 @@
-FROM golang:alpine as builder
-
-RUN apk add --no-cache make git
-RUN git clone https://github.com/micromdm/scep.git /go/src/github.com/micromdm/scep
-
-WORKDIR /go/src/github.com/micromdm/scep
-
-ENV CGO_ENABLED=0 \
-	GOARCH=amd64 \
-	GOOS=linux
-
-RUN make
-
 FROM alpine
 
-VOLUME "/depot"
+ENV SCEPCLIENT_VERSION="2.1.0"
 
-RUN apk --update add ca-certificates curl
-COPY --from=builder /go/src/github.com/micromdm/scep/scepclient-linux-amd64 /usr/bin/scepclient
-RUN chmod a+x /usr/bin/scepclient
+RUN apk --no-cache add curl
+RUN apk --update add ca-certificates
+RUN curl -L https://github.com/micromdm/scep/releases/download/v${SCEPCLIENT_VERSION}/scepclient-linux-amd64-v${SCEPCLIENT_VERSION}.zipp -o /scepclient.zip
+
+
+
+RUN unzip /scepclient.zip
+RUN rm /scepclient.zip
+RUN mv /scepclient-linux-amd64 /usr/local/bin/scepclient
+RUN chmod a+x /usr/local/bin/scepclient
 
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
