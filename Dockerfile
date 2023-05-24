@@ -17,7 +17,7 @@ VOLUME "/depot"
 
 RUN apk --update add ca-certificates curl
 COPY --from=builder /go/src/github.com/micromdm/scep/scepclient-linux-amd64 /usr/bin/scepclient
-RUN chmod a+x /usr/bin/scepclient
+RUN chmod a+x /usr/local/bin/scepclient
 
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
